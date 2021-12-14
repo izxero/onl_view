@@ -120,6 +120,7 @@ var navBar = {
     css:"pasteldarkgreen",
     cols:[
         createHeader("SQL2Excel",{css:"whitetext"}),
+        {view:"button",label:"Delete",width:80,css:"redbutton",click:delSql2Excel},
         {view:"button",css:"mybutton",label:"Add",width:80,click:function(){
             $$("sql2excel_form").setValues({DOC_NO:"NEW"});
             $$("sql2excel_window").show();
@@ -162,6 +163,7 @@ webix.ui({
         cols:[
             createHeader("Add/Edit",{css:"whitetext"}),
             {view:"button",css:"mybutton",label:"Save",width:80,click:saveSql2Excel},
+            {view:"button",css:"mybutton",label:"Save with TR",width:120,click:saveMstTr},
             {view:"button",css:"mybutton",label:"Close",width:80,click:function(){
                 $$("sql2excel_window").hide();
             }},
@@ -186,7 +188,26 @@ webix.ui({
                 ]
             },
             {view:"resizer"},
-            {},
+            {rows:[
+                {view:"toolbar",css:"pasteldarkgreen",cols:[
+                    createHeader("Lists",{css:"whitetext"}),
+                    {view:"icon",icon:"fas fa-plus",click:function(){
+                        let mst = $$("sql2excel_form").getValues();
+                        $$("tr_table").add({DOC_NO:mst.DOC_NO,DOC_ID:"NEW"});
+                    }},
+                ]},
+                {
+                    view:"datatable",
+                    id:"tr_table",
+                    css:"rows",
+                    editable:true,
+                    columns:[
+                        {id:"DOC_NO",width:100},
+                        {id:"DOC_ID",width:100},
+                        {id:"NAME",fillspace:true,editor:"text"},
+                    ]
+                }
+            ]},
         ]
     }
 }).hide();
@@ -222,10 +243,45 @@ function saveSql2Excel(){
     });
 }
 
+function delSql2Excel(){
+    let data = $$("sql2excel_table").getSelectedItem();
+    let post = {
+        KEYT:"6c15727a7cc40c26e7a8b14613fd753674c5181a639cf3767aa06a5effa1dce073da6751ae",
+        TABLE:"sql2excel",
+        // KEYT:"0b98f239df4e7621fff3a2b10e895cf034cf51653b695f1941fce0df8d00a4b4724898f3e7a2",
+        DATA:{
+            DOC_NO:data.DOC_NO,
+        }
+    }
+    webix.confirm("Delete "+data.DOC_NO+" ?").then(function(){
+        webix.ajax().post("http://localhost:9001/api/112/cud/del",post,function(text){
+            console.log(text);
+            let res = JSON.parse(text);
+            if (res.status=="complete"){
+                $$("sql2excel_table").remove(data.id);
+                webix.message("Delete Complete")
+            }else{
+                webix.message("Error while delete");
+            }
+        });
+    });
+}
+
 function formDataToJSON(form_id,pk_key){
     let original_data = $$(form_id).getValues();
     let actual_data = JSON.parse(JSON.stringify(original_data));
     delete actual_data.id;
     actual_data.PK = pk_key;
     return actual_data;
+}
+
+function saveMstTr(){
+    let tr_data = []
+    $$("tr_table").eachRow(function(row){
+        let current = $$("tr_table").getItem(row);
+        let actual_current = JSON.parse(JSON.stringify(current));
+        delete actual_current.id
+        tr_data.push(actual_current);
+    });
+    console.log(tr_data);
 }
