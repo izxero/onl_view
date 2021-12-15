@@ -7,7 +7,7 @@
 		<!-- <title>{{.title}}</title> -->
 
 		<!-- Webix Library -->
-		<script src="/library/webix/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/library/webix/codebase/webix.min.js" type="text/javascript" charset="utf-8"></script>
 		<link href="/library/webix/codebase/webix.css" rel="stylesheet" type="text/css">
 
 		<!-- ONLFINTECH Library -->
@@ -21,7 +21,7 @@
 	<body>
 		<script type="text/javascript">
 			const onl_const = {
-				api:"http://192.168.106.4:9001/api/"+{{.api_key}}+"/",
+				api_key:{{.api_key}},
 			}
 		</script>
 		{{embed}}
