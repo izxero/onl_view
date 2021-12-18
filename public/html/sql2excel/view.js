@@ -12,20 +12,21 @@ webix.ready(function(){
 webix.attachEvent("onLoadError", function(xhr, view){
 });
 
+// let api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
 let api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",
     css:"pasteldarkgreen",
     cols:[
-        createHeader("SQL2Excel",{css:"whitetext"}),
-        {view:"icon",icon:"fas fa-redo",click:function(){
-            sql2excelTable.reload();
-        }},
-        {view:"button",label:"Delete",width:80,css:"redbutton",click:function(){sql2excelTable.delete();}},
         {view:"button",css:"mybutton",label:"Add",width:80,click:function(){
             $$("sql2excel_form").setValues({DOC_NO:"NEW"});
             $$("sql2excel_window").show();
+        }},
+        createHeader("SQL2Excel",{css:"whitetext textcenter"}),
+        {view:"button",label:"Delete",width:80,css:"redbutton",click:function(){sql2excelTable.delete();}},
+        {view:"icon",icon:"fas fa-redo",click:function(){
+            sql2excelTable.reload();
         }},
     ]
 }
@@ -137,6 +138,8 @@ var sql2excel_form = {
             objData.CREATE_DATE = new Date();
         }
         objData.UPD_DATE = new Date();
+        objData.COLUMN_HEADING1 = JSON.stringify(headingData());
+        console.log(objData);
         let post = {
             TABLE:"sql2excel",
             CTRLNO:"sql2excel",
@@ -171,6 +174,9 @@ webix.ui({
             createHeader("Add/Edit",{css:"whitetext"}),
             {view:"button",css:"mybutton",label:"Save",width:100,click:function(){sql2excel_form.save();}},
             {view:"button",css:"mybutton",label:"Close",width:80,click:function(){
+                $$("replaceValueTable").clearAll();
+                $$("headingTable").clearAll();
+                refreshColumns("previewTable");
                 $$("sql2excel_window").hide();
             }},
         ]
@@ -266,6 +272,17 @@ function delApi(post_data,done_fn){
     webix.confirm("Please confirm to delete").then(function(){
         webix.ajax().post(api_host+"cud/del",post_data,done_fn);
     });
+}
+
+function headingData(){
+    let data = {};
+    let table = $$("headingTable");
+    table.eachRow(function(row){
+        let current = table.getItem(row);
+        data[current.column] = current.name;
+    });
+    console.log(data);
+    return data;
 }
 
 function removeIdAddPkKey(original_data,pk_key){
