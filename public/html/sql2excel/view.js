@@ -12,8 +12,8 @@ webix.ready(function(){
 webix.attachEvent("onLoadError", function(xhr, view){
 });
 
-// let api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
-let api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
+let api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
+// let api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",
@@ -188,9 +188,17 @@ webix.ui({
             {rows:[
                 {view:"toolbar",css:"pasteldarkgreen",cols:[
                     {view:"button",label:"Preview",width:100,css:"bluebutton",click:previewURL},
+                    {view:"button",label:"Map Header",width:130,css:"bluebutton",click:mapHeader},
                     // createHeader("Preview",{width:80,css:"whitetext"}),
                     {view:"text",css:"roundtextbox",placeholder:"URL",id:"previewURL"},
-                    {view:"button",label:"Map Header",width:130,css:"bluebutton",click:mapHeader},
+                    {view:"button",label:"Save To Menu",width:130,css:"bluebutton",click:function(){
+                        let form_data = $$("sql2excel_form").getValues();
+                        if(form_data.DOC_NO!="NEW"){
+                            // let link = "http://localhost:9000/menuManage?sql_no="+form_data.DOC_NO;
+                            let link = "http://192.168.106.4:9000/menuManage?sql_no="+form_data.DOC_NO;
+                            window.open(link,"_blank");
+                        }
+                    }},
                 ]},
                 {
                     view:"accordion",
@@ -250,29 +258,6 @@ webix.ui({
         ]
     }
 }).hide();
-
-function saveApi(post_data,done_fn){
-    // let post = {
-    //     TABLE:"sql2excel",
-    //     CTRLNO:"sql2excel",
-    //     PREFIX:"REP6499",
-    //     DATA:JSON.stringify(objData),
-    // }
-    webix.ajax().post(api_host+"cud/upd",post_data,done_fn);
-}
-
-function delApi(post_data,done_fn){
-    // let post = {
-    //     KEYT:"6c15727a7cc40c26e7a8b14613fd753674c5181a639cf3767aa06a5effa1dce073da6751ae",
-    //     TABLE:"sql2excel",
-    //     DATA:{
-    //         DOC_NO:data.DOC_NO,
-    //     }
-    // }
-    webix.confirm("Please confirm to delete").then(function(){
-        webix.ajax().post(api_host+"cud/del",post_data,done_fn);
-    });
-}
 
 function headingData(){
     let data = {};

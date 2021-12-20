@@ -1,7 +1,30 @@
 function loadTable(url,obj){
 	return webix.ajax().post(url,obj,function(data){
-		// console.log(data);
+		console.log(data);
 	});
+}
+
+function saveApi(post_data,done_fn){
+    // let post = {
+    //     TABLE:"sql2excel",
+    //     CTRLNO:"sql2excel",
+    //     PREFIX:"REP6499",
+    //     DATA:JSON.stringify(objData),
+    // }
+    webix.ajax().post(api_host+"cud/upd",post_data,done_fn);
+}
+
+function delApi(post_data,done_fn){
+    // let post = {
+    //     KEYT:"6c15727a7cc40c26e7a8b14613fd753674c5181a639cf3767aa06a5effa1dce073da6751ae",
+    //     TABLE:"sql2excel",
+    //     DATA:{
+    //         DOC_NO:data.DOC_NO,
+    //     }
+    // }
+    webix.confirm("Please confirm to delete").then(function(){
+        webix.ajax().post(api_host+"cud/del",post_data,done_fn);
+    });
 }
 
 function loadTableTo(table_id,values){
