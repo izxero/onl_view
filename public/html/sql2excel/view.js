@@ -197,6 +197,8 @@ webix.ui({
                             // let link = "http://localhost:9000/menuManage?sql_no="+form_data.DOC_NO;
                             let link = "http://192.168.106.4:9000/menuManage?sql_no="+form_data.DOC_NO;
                             window.open(link,"_blank");
+                        }else{
+                            webix.alert("DOC_NO not found<br>please save this SQL2EXCEL");
                         }
                     }},
                 ]},
