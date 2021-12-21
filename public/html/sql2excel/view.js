@@ -86,6 +86,7 @@ var sql2excelTable = {
             let current_data = this.getItem(id);
             $$("sql2excel_form").setValues(current_data);
             $$("sql2excel_window").show();
+            getReplaceValue();
         }
     }
 }
@@ -105,28 +106,7 @@ var sql2excel_form = {
         ]},
         {view:"textarea",labelWidth:80,labelAlign:"right",name:"SQL_TEXT",label:"SQL",on:{
             onChange:function(){
-                let replaceValArr = [];
-                let sql_text = this.getValue();
-                let sqlLeftArr = sql_text.split("{");
-                sqlLeftArr.forEach(function(item){
-                    if (item.includes("}")){
-                        let sqlrightArr = item.split("}");
-                        replaceValArr.push(sqlrightArr[0]);
-                    }
-                });
-                let uniq = [...new Set(replaceValArr)];
-                let replaceArr = [];
-                uniq.forEach(function(item){
-                    replaceArr.push({variable:item,value:""});
-                });
-                if (replaceArr.length == 0){
-                    $$("replaceValueAcc").collapse();
-                }else{
-                    $$("replaceValueAcc").expand();
-                }
-                $$("replaceValueTable").clearAll();
-                $$("replaceValueTable").parse(replaceArr);
-                genURL();
+                getReplaceValue();
             }
         }},
     ],
@@ -262,6 +242,7 @@ webix.ui({
 }).hide();
 
 function headingData(){
+    $$("headingTable").editStop();
     let data = {};
     let table = $$("headingTable");
     table.eachRow(function(row){
@@ -373,4 +354,30 @@ function genURL(){
     let doc_no = $$("sql2excel_form").getValues().DOC_NO;
     $$("previewURL").setValue(api_host+"get/sqlq/"+doc_no+"?"+paramsText);
     console.log(paramsText);
+}
+
+function getReplaceValue(){
+    let replaceValArr = [];
+    let sql_form_data = $$("sql2excel_form").getValues();
+    let sql_text = sql_form_data.SQL_TEXT;
+    let sqlLeftArr = sql_text.split("{");
+    sqlLeftArr.forEach(function(item){
+        if (item.includes("}")){
+            let sqlrightArr = item.split("}");
+            replaceValArr.push(sqlrightArr[0]);
+        }
+    });
+    let uniq = [...new Set(replaceValArr)];
+    let replaceArr = [];
+    uniq.forEach(function(item){
+        replaceArr.push({variable:item,value:""});
+    });
+    if (replaceArr.length == 0){
+        $$("replaceValueAcc").collapse();
+    }else{
+        $$("replaceValueAcc").expand();
+    }
+    $$("replaceValueTable").clearAll();
+    $$("replaceValueTable").parse(replaceArr);
+    genURL();
 }
