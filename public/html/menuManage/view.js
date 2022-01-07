@@ -102,32 +102,52 @@ var menuTable = {
                 }
             }
         },
-        {id:"index",template:function(obj, common, marks, column, index){
-            if(obj.$level==3){
-                return index;
+        // {id:"index",template:function(obj, common, marks, column, index){
+        //     if(obj.$level==3){
+        //         return index;
+        //     }
+        //     return "";
+        // }},
+        // {id:"branchindex",template:function(obj, common, marks, column, index){
+        //     // if(obj.$level==3){
+        //     //     return common.space(obj, common) + $$("$menuTable").getBranchIndex(obj.id)
+        //     // }
+        //     return "";
+        // }},
+        {id:"addToTemp",width:80,
+            tooltip:function(obj){
+                if(obj.$level==1)
+                    return "เพิ่มใน "+obj.MENU_GRP;
+                else if(obj.$level==2)
+                    return "เพิ่มใน "+obj.value;
+                return "";
+            },
+            header:[{text:"",css:theme},{text:"",css:theme}],template:function(obj){
+                if(obj.$level==1)
+                    return  "<div class='myhover iconcenter'><button class='addLevel1Click tablebutton'><i class='fas fa-plus-circle'></i></button></div>"
+                else if(obj.$level==2)
+                    return  "<div class='myhover iconcenter'><button class='addLevel2Click tablebutton'><i class='fas fa-plus'></i></button></div>"
+                return "<div class='myhover iconcenter'><button class='addLevel3Click tablebutton'><i class='fas fa-edit'></i></button></div>";
             }
-            return "";
-        }},
-        {id:"branchindex",template:function(obj, common, marks, column, index){
-            // if(obj.$level==3){
-            //     return common.space(obj, common) + $$("$menuTable").getBranchIndex(obj.id)
-            // }
-            return "";
-        }},
-        {id:"addToTemp",tooltip:function(obj){
-            if(obj.$level==1)
-            return "เพิ่มใน "+obj.MENU_GRP;
-            else if(obj.$level==2)
-            return "เพิ่มใน "+obj.value;
-            return "";
-        },header:[{text:"",css:theme},{text:"",css:theme}],template:function(obj){
-            if(obj.$level==1)
-            return  "<div class='myhover iconcenter'><button class='addLevel1Click tablebutton'><i class='fas fa-plus-circle'></i></button></div>"
-            else if(obj.$level==2)
-            return  "<div class='myhover iconcenter'><button class='addLevel2Click tablebutton'><i class='fas fa-plus'></i></button></div>"
-            return "<div class='myhover iconcenter'><button class='addLevel3Click tablebutton'><i class='fas fa-edit'></i></button></div>";
-        }},
-        // {id:"$parent"},
+        },
+        {id:"viewRe",width:80,
+            header:[{text:"View",css:theme},{text:"",css:theme}],template:function(obj){
+                if(obj.$level==1)
+                    return  ""
+                else if(obj.$level==2)
+                    return  ""
+                return "<div class='myhover iconcenter'><button class='viewReClick tablebutton'><i class='fas fa-eye'></i></button></div>";
+            }
+        },
+        {id:"viewRe",
+            header:[{text:"Design",css:theme},{text:"",css:theme}],template:function(obj){
+                if(obj.$level==1)
+                    return  ""
+                else if(obj.$level==2)
+                    return  ""
+                return "<div class='myhover iconcenter'><button class='viewDeClick tablebutton'><i class='fas fa-pencil-ruler'></i></button></div>";
+            }
+        },
     ],
     on:{
         onItemClick:function(id){
@@ -196,6 +216,16 @@ var menuTable = {
             } 
             $$("menuForm").setValues(data);
             $$("menuForm_window").show();
+        },
+        "viewReClick":function(event, cell, target){
+            let current = this.getItem(cell.row);
+            let link = "http://192.168.106.4:24680/view?RE="+current.MRT_NAME;
+            window.open(link,"_blank");
+        },
+        "viewDeClick":function(event, cell, target){
+            let current = this.getItem(cell.row);
+            let link = "http://192.168.106.4:24680/design?RE="+current.MRT_NAME+"&sql_no="+current.SQL_NO;
+            window.open(link,"_blank");
         },
     },
     scheme:{
@@ -281,6 +311,7 @@ var menuForm = {
                 $$("menuForm").setValues({DOC_NO:res.DOC_NO},true);
                 menuTable.reload();
                 webix.message("Saved");
+                $$("menuForm_window").hide();
             }else{
                 webix.message("error while saving");
             }

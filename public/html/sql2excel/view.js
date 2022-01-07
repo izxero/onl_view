@@ -232,6 +232,7 @@ webix.ui({
                                 id:"previewTable",
                                 css:"rows",
                                 autoConfig:true,
+                                resizeColumn:true,
                             }
                         },
                     ]
@@ -302,6 +303,18 @@ function getHeader(sqlObj){
                 let current = $$("headingTable").getItem(row);
                 if(mapHeading[current.column]){
                     let updateValue = {name:mapHeading[current.column]};
+                    $$("headingTable").updateItem(row,updateValue);
+                }else{
+                    let column_name = current.column;
+                    let column_arr = column_name.split("_");
+                    let column_new_arr = [];
+                    column_arr.forEach(function(col){
+                        let lower = col.toLowerCase();
+                        let new_txt = lower.charAt(0).toUpperCase()+lower.slice(1);
+                        column_new_arr.push(new_txt);
+                    })
+                    let name =  column_new_arr.join(" ");
+                    let updateValue = {name:name};
                     $$("headingTable").updateItem(row,updateValue);
                 }
             });
