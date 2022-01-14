@@ -1,6 +1,6 @@
 function loadTable(url,obj){
 	return webix.ajax().post(url,obj,function(data){
-		console.log(data);
+		// console.log(data);
 	});
 }
 
