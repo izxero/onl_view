@@ -9,8 +9,8 @@ webix.ready(function(){
     });
 });
 
-// const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
-const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
+const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
+// const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",

@@ -9,8 +9,8 @@ webix.ready(function(){
     });
 });
 
-// const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
-const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
+const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
+// const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",
@@ -22,7 +22,8 @@ var navBar = {
                 REF_ID:"new",
             }
             $$("master_form").setValues(blank_data);
-            $$("detail_table").clearAll();
+            $$("detail_table1").clearAll();
+            $$("detail_table2").clearAll();
             $$("master_form_window").show();
         }},
         {view:"icon",icon:"fas fa-redo",tooltip:"Refresh",click:function(){master_table.reload()}},
@@ -52,7 +53,8 @@ var master_table = {
             let data = this.getItem(id);
             $$("master_form").setValues(data);
             $$("master_form_window").show();
-            detail_table.reload();
+            detail_table1.reload();
+            detail_table2.reload();
         }
     }
 }
@@ -81,9 +83,11 @@ var master_form = {
         webix.ajax().post(api_host+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
-                console.log("save master complete")
+                console.log("save master complete");
+                webix.message("MST : Save Complete");
                 $$("master_form").setValues({REF_ID:res.REF_ID},true);
-                detail_table.saveTable();
+                detail_table1.saveTable();
+                detail_table2.saveTable();
             }else{
                 console.log(text);
                 webix.message("error while saving");
@@ -99,9 +103,9 @@ table_col = [
     {id:"CR",header:"Credit",width:200,editor:"text"},
 ]
 
-var detail_table = {
+var detail_table1 = {
     view:"datatable",
-    id:"detail_table",
+    id:"detail_table1",
     css:"rows",
     hover:"tableHover",
     editable:true,
@@ -125,9 +129,9 @@ var detail_table = {
             dataArr.push(current_actual_row);
         });
         let post = {
-            TABLE:"gl_vchr_t",
+            TABLE:"gl_vchr_t1",
             CTRLNO:"gl_vchr",
-            PREFIX:"vchr6499",
+            PREFIX:"vc1_6499",
             PK:"VCHR_NO",
             DATA:JSON.stringify(dataArr),
         }
@@ -136,8 +140,61 @@ var detail_table = {
         webix.ajax().post(api_host+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
-                detail_table.reload();
-                webix.message("Save complete");
+                detail_table1.reload();
+                webix.message("DR1 : Save complete");
+            }else{
+                console.log(text);
+                webix.message("error while saving");
+            }
+        })
+    }
+}
+
+table_col = [
+    {id:"VCHR_NO",header:"VCHR_NO",minWidth:100,fillspace:true},
+    {id:"DB",header:"Debit",width:200,editor:"text"},
+    {id:"CR",header:"Credit",width:200,editor:"text"},
+]
+
+var detail_table2 = {
+    view:"datatable",
+    id:"detail_table2",
+    css:"rows",
+    hover:"tableHover",
+    editable:true,
+    reload:function(ref_id){
+        ref_id = ref_id || $$("master_form").getValues().REF_ID;
+        let url = api_host + "get/sqlq/REP6499-0310?id=" + ref_id;
+        $$(this.id).clearAll();
+        $$(this.id).load(url);
+    },
+    columns:table_col,
+    saveTable:function(){
+        let table = $$(this.id)
+        console.log(table);
+        let dataArr = [];
+        table.eachRow(function(row){
+            let master_id = $$("master_form").getValues().REF_ID;
+            let current_row = table.getItem(row);
+            let current_actual_row = JSON.parse(JSON.stringify(current_row));
+            delete current_actual_row.id;
+            current_actual_row.ID = master_id;
+            dataArr.push(current_actual_row);
+        });
+        let post = {
+            TABLE:"gl_vchr_t2",
+            CTRLNO:"gl_vchr",
+            PREFIX:"vc2_6499",
+            PK:"VCHR_NO",
+            DATA:JSON.stringify(dataArr),
+        }
+        // console.log(dataArr);
+        // console.log(post);
+        webix.ajax().post(api_host+"cud/upda",post,function(text){
+            let res = JSON.parse(text);
+            if(res.status=="complete"){
+                detail_table2.reload();
+                webix.message("DR2 : Save complete");
             }else{
                 console.log(text);
                 webix.message("error while saving");
@@ -172,12 +229,19 @@ webix.ui({
                 let blank_data = {
                     VCHR_NO:"new"
                 }
-                $$("detail_table").add(blank_data,0);
+                $$("detail_table1").add(blank_data,0);
+            }},
+            {},
+            {view:"icon",icon:"fas fa-plus",click:function(){
+                let blank_data = {
+                    VCHR_NO:"new"
+                }
+                $$("detail_table2").add(blank_data,0);
             }},
         ]},
         {cols:[
-            detail_table,
-            {},
+            detail_table1,
+            detail_table2,
         ]}
     ]}
 }).hide();
