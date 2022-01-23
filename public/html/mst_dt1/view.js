@@ -9,8 +9,8 @@ webix.ready(function(){
     });
 });
 
-const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
-// const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
+// const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
+const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",
@@ -71,6 +71,7 @@ var master_form = {
         return getFormData(this.id);
     },
     save:function(){
+        $$("saving_window").show();
         let form_data = getFormData(this.id);
         let post = {
             TABLE:"gl_mst_t",
@@ -83,8 +84,7 @@ var master_form = {
         webix.ajax().post(api_host+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
-                console.log("save master complete");
-                webix.message("MST : Save Complete");
+                console.log("MST : Save Complete");
                 $$("master_form").setValues({REF_ID:res.REF_ID},true);
                 detail_table1.saveTable();
                 detail_table2.saveTable();
@@ -92,6 +92,7 @@ var master_form = {
                 console.log(text);
                 webix.message("error while saving");
             }
+            $$("saving_window").hide();
         })
     }
 
@@ -135,13 +136,11 @@ var detail_table1 = {
             PK:"VCHR_NO",
             DATA:JSON.stringify(dataArr),
         }
-        console.log(dataArr);
-        // console.log(post);
         webix.ajax().post(api_host+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
                 detail_table1.reload();
-                webix.message("DR1 : Save complete");
+                console.log("DR1 : Save complete");
             }else{
                 console.log(text);
                 webix.message("error while saving");
@@ -170,6 +169,7 @@ var detail_table2 = {
     },
     columns:table_col,
     saveTable:function(){
+        $$("saving_window").show();
         let table = $$(this.id)
         console.log(table);
         let dataArr = [];
@@ -188,17 +188,16 @@ var detail_table2 = {
             PK:"VCHR_NO",
             DATA:JSON.stringify(dataArr),
         }
-        // console.log(dataArr);
-        // console.log(post);
         webix.ajax().post(api_host+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
                 detail_table2.reload();
-                webix.message("DR2 : Save complete");
+                console.log("DR2 : Save complete");
             }else{
                 console.log(text);
                 webix.message("error while saving");
             }
+            $$("saving_window").hide();
         })
     }
 }
@@ -243,6 +242,19 @@ webix.ui({
             detail_table1,
             detail_table2,
         ]}
+    ]}
+}).hide();
+
+webix.ui({
+    view:"window",
+    id:"saving_window",
+    position:"center",
+    modal:true,
+    width:200,
+    height:100,
+    head:false,
+    body:{rows:[
+        {view:"label",align:"center",label:"Saving..."}
     ]}
 }).hide();
 
