@@ -12,8 +12,7 @@ webix.ready(function(){
 webix.attachEvent("onLoadError", function(xhr, view){
 });
 
-// let api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
-let api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
+const api_host = onl_const.api_address+":9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",

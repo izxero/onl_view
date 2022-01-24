@@ -9,8 +9,8 @@ webix.ready(function(){
     });
 });
 
-// const api_host = "http://192.168.106.4:9001/api/"+onl_const.api_key+"/";
-const api_host = "http://localhost:9001/api/"+onl_const.api_key+"/";
+const api_address = onl_const.api_address;
+// const api_address = onl_const.api_host+":9001/api/"+onl_const.api_key+"/";
 
 var navBar = {
     view:"toolbar",
@@ -41,9 +41,9 @@ var master_table = {
     id:"master_table",
     css:"rows",
     hover:"tableHover",
-    url:api_host+"get/sqlq/REP6499-0306?",
+    url:api_address+"get/sqlq/REP6499-0306?",
     reload:function(){
-        let url = api_host + "get/sqlq/REP6499-0306?"
+        let url = api_address + "get/sqlq/REP6499-0306?"
         $$(this.id).clearAll();
         $$(this.id).load(url);
     },
@@ -51,6 +51,7 @@ var master_table = {
     on:{
         onItemDblClick:function(id){
             let data = this.getItem(id);
+            console.log(data);
             $$("master_form").setValues(data);
             $$("master_form_window").show();
             detail_table1.reload();
@@ -72,7 +73,9 @@ var master_form = {
     },
     save:function(){
         $$("saving_window").show();
+        // let form_data = $$("master_form").getValues();
         let form_data = getFormData(this.id);
+        console.log(form_data);
         let post = {
             TABLE:"gl_mst_t",
             CTRLNO:"gl_mst",
@@ -81,8 +84,9 @@ var master_form = {
             DATA:JSON.stringify(form_data),
         }
         console.log(post);
-        webix.ajax().post(api_host+"cud/upda",post,function(text){
+        webix.ajax().post(api_address+"cud/upda",post,function(text){
             let res = JSON.parse(text);
+            console.log(res);
             if(res.status=="complete"){
                 console.log("MST : Save Complete");
                 $$("master_form").setValues({REF_ID:res.REF_ID},true);
@@ -112,7 +116,7 @@ var detail_table1 = {
     editable:true,
     reload:function(ref_id){
         ref_id = ref_id || $$("master_form").getValues().REF_ID;
-        let url = api_host + "get/sqlq/REP6499-0307?id=" + ref_id;
+        let url = api_address + "get/sqlq/REP6499-0307?id=" + ref_id;
         $$(this.id).clearAll();
         $$(this.id).load(url);
     },
@@ -136,7 +140,7 @@ var detail_table1 = {
             PK:"VCHR_NO",
             DATA:JSON.stringify(dataArr),
         }
-        webix.ajax().post(api_host+"cud/upda",post,function(text){
+        webix.ajax().post(api_address+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
                 detail_table1.reload();
@@ -163,7 +167,7 @@ var detail_table2 = {
     editable:true,
     reload:function(ref_id){
         ref_id = ref_id || $$("master_form").getValues().REF_ID;
-        let url = api_host + "get/sqlq/REP6499-0310?id=" + ref_id;
+        let url = api_address + "get/sqlq/REP6499-0310?id=" + ref_id;
         $$(this.id).clearAll();
         $$(this.id).load(url);
     },
@@ -188,7 +192,7 @@ var detail_table2 = {
             PK:"VCHR_NO",
             DATA:JSON.stringify(dataArr),
         }
-        webix.ajax().post(api_host+"cud/upda",post,function(text){
+        webix.ajax().post(api_address+"cud/upda",post,function(text){
             let res = JSON.parse(text);
             if(res.status=="complete"){
                 detail_table2.reload();

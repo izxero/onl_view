@@ -7,7 +7,9 @@ webix.ready(function(){
 		]
 	});
 });
-console.log(onl_const.api);
+
+const api_host = onl_const.api_address+":9001/api/"+onl_const.api_key+"/";
+
 var loginForm = {
     view:"form",
     type:"clean",

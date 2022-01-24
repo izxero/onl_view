@@ -2,7 +2,9 @@ package onl_func
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 	"strconv"
 	"time"
@@ -21,7 +23,17 @@ func ReadFileJson(file_path string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-func JsonForTemplate(data map[string]interface{}) map[string]interface{} {
+func JsonForTemplate(data map[string]interface{}, view string) map[string]interface{} {
+	conn, error := net.Dial("udp", "8.8.8.8:80")
+	if error != nil {
+		fmt.Println(error)
+
+	}
+
+	defer conn.Close()
+	addr := conn.LocalAddr().(*net.UDPAddr)
+	data["api_address"] = addr.IP
 	data["api_key"] = strconv.Itoa(int(time.Now().Month()) + 100)
+	data["folder"] = view
 	return data
 }

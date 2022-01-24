@@ -41,11 +41,12 @@ var sidebar = {
             multipleOpen:true,
             width:200,
             css:"webix_dark",
-            data:[
-                {id:"1",value:"Log",src:"log",icon:"fas fa-file-alt"},
-				{id:"2",value:"SQL2Excel",src:"sql2excel",icon:"fas fa-table"},
-                // {id:"3",value:"Login",src:"login",icon:"fas fa-table"},
-            ],
+            url:"/menu",
+            // data:[
+            //     {id:"1",value:"Log",src:"log",icon:"fas fa-file-alt"},
+			// 	{id:"2",value:"SQL2Excel",src:"sql2excel",icon:"fas fa-table"},
+            //     // {id:"3",value:"Login",src:"login",icon:"fas fa-table"},
+            // ],
             on:{
                 onAfterSelect:function(id){
                     let current = this.getItem(id);

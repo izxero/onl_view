@@ -2,6 +2,8 @@ package onl_fiber
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/savirusing/onl_view/go_services/onl_func"
@@ -32,6 +34,27 @@ func RenderView(view string, template string, c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(onl_func.ErrorReturn(err, c))
 	}
-	jsonData := onl_func.JsonForTemplate(result)
+	jsonData := onl_func.JsonForTemplate(result, view)
 	return c.Render(index_filepath_without_ext, jsonData, template_path_without_ext)
+}
+
+func getFolder(c *fiber.Ctx) error {
+	files, err := ioutil.ReadDir("./public/html/")
+	if err != nil {
+		return c.JSON(onl_func.ErrorReturn(err, c))
+	}
+
+	var menu_folder []interface{}
+	i := 1
+	for _, f := range files {
+		data := map[string]interface{}{
+			"id":    i,
+			"value": strings.ToUpper(f.Name()),
+			"src":   f.Name(),
+			"icon":  "fas fa-table",
+		}
+		menu_folder = append(menu_folder, data)
+		i++
+	}
+	return c.JSON(menu_folder)
 }

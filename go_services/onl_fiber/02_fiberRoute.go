@@ -5,6 +5,9 @@ import (
 )
 
 func fiberRoute(app *fiber.App) {
+	//get folder api
+	app.Get("/menu",getFolder)
+
 	// Create Group as ==> host:port/log/...
 	apiLog := app.Group("/log")
 	apiLog.Get("/get/:date?", readLog) // api to get log file as json from today (or specific date) ==> host:port/log/get/?date? == format "yyyymmdd"
