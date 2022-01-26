@@ -3,7 +3,10 @@ package onl_fiber
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/savirusing/onl_view/go_services/onl_func"
@@ -57,4 +60,20 @@ func getFolder(c *fiber.Ctx) error {
 		i++
 	}
 	return c.JSON(menu_folder)
+}
+
+func gridTemplatev1(c *fiber.Ctx) error {
+	conn, error := net.Dial("udp", "8.8.8.8:80")
+	if error != nil {
+		fmt.Println(error)
+	}
+	defer conn.Close()
+	addr := conn.LocalAddr().(*net.UDPAddr)
+	api_address := addr.IP
+	api_key := strconv.Itoa(int(time.Now().Month()) + 100)
+	return c.Render("html/grid_template/index", fiber.Map{
+		"api_address": api_address,
+		"api_key":     api_key,
+		"folder":	  "grid_template",
+	} , "html_template/webix_tailwind_header")
 }

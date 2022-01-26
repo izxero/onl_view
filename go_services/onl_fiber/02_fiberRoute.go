@@ -13,6 +13,7 @@ func fiberRoute(app *fiber.App) {
 	apiLog.Get("/get/:date?", readLog) // api to get log file as json from today (or specific date) ==> host:port/log/get/?date? == format "yyyymmdd"
 
 	// Render view ==> host:port/view
+	app.Get("/grid",gridTemplatev1)
 	app.Get("/:view?", getView)
 	app.Static("/", "./public")
 }
