@@ -168,7 +168,7 @@ var menuTable = {
             let data = Object.assign({},current);
             if(current.$level==3){
                 if(Q_PASS){
-                    data.SQL_NO = Q_SQL_NO; 
+                    data.SQL_NO = Q_SQL_NO;
                 }
                 $$("menuForm").setValues(data);
                 $$("menuForm_window").show();
@@ -180,7 +180,7 @@ var menuTable = {
         onBeforeDragIn:function(config, id){
             if (!id) return false;                      // block dnd on top level
             // if (!this.getItem(id).$count) return false; // block dnd in leaf items
-        }    
+        }
     },
     onClick:{
         "addLevel1Click":function(event, cell, target){
@@ -188,7 +188,7 @@ var menuTable = {
             let data = {
                 DOC_NO:"NEW",
                 MENU_GRP:current.MENU_GRP,
-            } 
+            }
             if(Q_PASS){
                 data.SQL_NO = Q_SQL_NO;
             }
@@ -213,7 +213,7 @@ var menuTable = {
             let data = Object.assign({},current);
             if(Q_PASS){
                 data.SQL_NO = Q_SQL_NO;
-            } 
+            }
             $$("menuForm").setValues(data);
             $$("menuForm_window").show();
         },
@@ -364,7 +364,7 @@ webix.ui({
     },
     body:{
         rows:[
-            {view:"text",id:"menuGRP_text"},
+            {view:"text",id:"menuGRP_text",hidden:true},
             {cols:[
                 {view:"text",id:"new_grp",placeholder:"เพิ่มใหม่"},
                 {view:'button',label:"เพิ่ม",width:80,css:"greenbutton",click:function(){

@@ -24,6 +24,10 @@
 
 </div>
 <script type="text/javascript">
+var api_host = "http://{{.api_address}}";
+var api_key = {{.api_key}};
+var api_address = "http://{{.api_address}}:9001/api/{{.api_key}}/";
+
     webix.ready(function(){
 	if (!webix.env.touch && webix.env.scrollSize)
         webix.CustomScroll.init();
@@ -35,7 +39,6 @@
     });
 });
 // <span class="border border-transparent rounded-md bg-green-500  text-white font-bold hover:bg-green-600">Add New</span>
-const api_address = onl_const.api_address;
 // const api_address = onl_const.api_host+":9001/api/"+onl_const.api_key+"/";
 var add = {view:"button",id:"Add",hidden:true,
         click:function(){
@@ -85,6 +88,16 @@ var master_form = {
     id:"master_form",
     rows:[
         {view:"text",labelWidth:100,labelAlign:"right",name:"REF_ID",label:"REF_ID"},
+        {view:"text",labelWidth:100,labelAlign:"right",minWidth:300,name:"MENU_SUB_GRP",label:"กลุ่มย่อย",placeholder:"คลิกเพื่อเลือกกลุ่มย่อย",readonly:true,on:{onItemClick:function(){
+                let sqlMenu = "SELECT DISTINCT batch_no as ID FROM gl_batch GROUP BY batch_no ORDER BY batch_no ASC";
+                let sqlObjMenu = {
+                    SQL:sqlMenu,
+                }
+                console.log(sqlMenu);
+                $$("menuGRP_list").clearAll();
+                $$("menuGRP_list").parse(loadTable(api_address+"post/sqlq/",sqlObjMenu));
+                $$("menuGRP_popup").show();
+        }}},
         {view:"text",labelWidth:100,labelAlign:"right",name:"NAME_THAI",label:"NAME_THAI"},
         {view:"text",labelWidth:100,labelAlign:"right",name:"NAME_ENG",label:"NAME_ENG"},
     ],
@@ -122,7 +135,7 @@ var master_form = {
 
 }
 
-table_col = [
+var table_col = [
     {id:"VCHR_NO",header:"VCHR_NO",minWidth:100,fillspace:true},
     {id:"DB",header:"Debit",width:200,editor:"text"},
     {id:"CR",header:"Credit",width:200,editor:"text"},
@@ -173,7 +186,7 @@ var detail_table1 = {
     }
 }
 
-table_col = [
+var table_col = [
     {id:"VCHR_NO",header:"VCHR_NO",minWidth:100,fillspace:true},
     {id:"DB",header:"Debit",width:200,editor:"text"},
     {id:"CR",header:"Credit",width:200,editor:"text"},
@@ -226,16 +239,16 @@ var detail_table2 = {
     }
 }
 
-webix.ui({
+var mst_form = {
     view:"window",
     id:"master_form_window",
     modal:true,
     position:autoAdjustWindow(),
     head:{
         view:"toolbar",
-        css:"pasteldarkblue",
+        css:"bg-blue-700",
         cols:[
-            {view:"icon",icon:"fas fa-arrow-left",click:function(){
+            {view:"icon",css:"text-white",icon:"fas fa-arrow-left ",click:function(){
                 $$("master_form_window").hide();
             }},
             createHeader("MST Form",{css:"whitetext"}),
@@ -267,8 +280,56 @@ webix.ui({
             detail_table2,
         ]}
     ]}
-}).hide();
+}
+webix.ui(mst_form).hide();
 
+var gl_batch_popup = {
+    view:"window",
+    id:"menuGRP_popup",
+    position:"center",
+    move:true,
+    modal:true,
+    width:400,
+    height:600,
+    head:{
+        view:"toolbar",
+        css:"pasteldarkgreen",
+        cols:[
+            createHeader("กรุณาเลือก",{css:"whitetext",id:"popup_header"}),
+            {view:"icon",icon:"fas fa-times",click:function(){
+                $$("menuGRP_popup").hide();
+            }}
+        ]
+    },
+    body:{
+        rows:[
+            {view:"text",id:"menuGRP_text",hidden:true},
+            {
+                view:"list",
+                width:300,
+                // autoheight:true,
+                select:true,
+                css:"rows",
+                hover:"tableHover",
+                id:"menuGRP_list",
+                template:"#ID#",
+                on:{
+                    onItemClick:function(id){
+                        let set_to = $$("menuGRP_text").getValue();
+                        let data = {};
+                        data[set_to] = this.getItem(id).ID;
+                        console.log(data);
+                        $$("menuForm").setValues(data,true);
+                        $$("menuGRP_popup").hide();
+                    }
+                }
+            },
+        ],
+    }
+}
+
+//GL_BATCH popup
+webix.ui(gl_batch_popup).hide();
 webix.ui({
     view:"window",
     id:"saving_window",
@@ -291,6 +352,36 @@ function getFormData(form_id){
     }
     $$(form_id).setValues(current_data);
     return blank_data;
+}
+function showMENU(menu_grp){
+    switch(menu_grp){
+        case "MENU_GRP":
+            console.log("Show "+menu_grp);
+            $$("popup_header").define("template","กรุณาเลือก : กลุ่ม");
+            $$("popup_header").refresh();
+            genMENU_GRP_TABLE(menu_grp);
+            break;
+        case "MENU_SUB_GRP":
+            console.log("Show "+menu_grp);
+            $$("popup_header").define("template","กรุณาเลือก : กลุ่มย่อย");
+            $$("popup_header").refresh();
+            genMENU_GRP_TABLE(menu_grp);
+            break;
+        default:
+            console.log("Menu not found");
+    }
+}
+
+function genMENU_GRP_TABLE(menu_grp){
+    let sqlMenu = "SELECT DISTINCT "+menu_grp+" AS id, MIN(NVL(LINE_NO,999)) LINE_NO FROM MENU_REPORT GROUP BY "+menu_grp+" ORDER BY LINE_NO ASC, "+menu_grp+" ASC";
+    let sqlObjMenu = {
+        SQL:sqlMenu,
+    }
+    console.log(sqlMenu);
+    $$("menuGRP_list").clearAll();
+    $$("menuGRP_list").parse(loadTable(api_address+"post/sqlq/",sqlObjMenu));
+    $$("menuGRP_text").setValue(menu_grp);
+    $$("menuGRP_popup").show();
 }
 </script>
 <!-- <script type="text/javascript" src="/html/mst_dt1/view.js"></script> -->
